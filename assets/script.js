@@ -148,6 +148,16 @@ function showLoading(msg = 'Loading...') {
 
 // Wait for Firebase to be ready then set up auth listener
 document.addEventListener('firebaseReady', () => {
+  // Handle redirect result first (for mobile/popup-blocked fallback)
+  if (window._getRedirectResult) {
+    window._getRedirectResult().then(async (result) => {
+      if (result && result.user) {
+        showLoading('Loading your profile...');
+        await handleAuthSuccess(result.user);
+      }
+    }).catch(() => {});
+  }
+
   window._onAuthChanged(async (firebaseUser) => {
     if (firebaseUser) {
       showLoading('Loading your profile...');
@@ -163,15 +173,21 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
   errEl.textContent = '';
   showLoading('Opening Google Sign In...');
   try {
+    // Try popup first, fall back to redirect if blocked
     await window._firebaseSignIn();
     // onAuthChanged will handle the rest
   } catch (err) {
-    showStep('step-google');
-    if (err.code === 'auth/popup-closed-by-user') {
-      errEl.textContent = 'Sign-in cancelled. Try again.';
-    } else if (err.code === 'auth/popup-blocked') {
-      errEl.textContent = '⚠ Popup blocked. Please allow popups for this site.';
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+      // Fallback to redirect method
+      showLoading('Redirecting to Google...');
+      try {
+        await window._firebaseSignInRedirect();
+      } catch (redirectErr) {
+        showStep('step-google');
+        errEl.textContent = '⚠ Error: ' + redirectErr.message;
+      }
     } else {
+      showStep('step-google');
       errEl.textContent = '⚠ Error: ' + err.message;
     }
   }
