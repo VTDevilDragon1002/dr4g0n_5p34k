@@ -35,7 +35,7 @@ const firebaseConfig = {
   // Expose to global scope for use in script.js
   window._firebaseAuth     = auth;
   window._googleProvider   = provider;
-  window._firebaseSignIn   = () => signInWithPopup(auth, provider);
+  window._firebaseSignIn   = () => signInWithRedirect(auth, provider);
   window._firebaseSignInRedirect = () => signInWithRedirect(auth, provider);
   window._getRedirectResult = () => getRedirectResult(auth);
   window._firebaseSignOut  = () => signOut(auth);
@@ -332,4 +332,3 @@ const firebaseConfig = {
 <script type="module" src="assets/script.js"></script>
 </body>
 </html>
-  
