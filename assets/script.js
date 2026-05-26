@@ -158,9 +158,13 @@ document.addEventListener('firebaseReady', () => {
     }).catch(() => {});
   }
 
+  let authHandled = false;
   window._onAuthChanged(async (firebaseUser) => {
+    console.log('AUTH STATE CHANGED:', firebaseUser ? firebaseUser.email : 'null');
+    if (authHandled) { console.log('Already handled, skipping'); return; }
     if (firebaseUser) {
-      showLoading('Loading your profile...');
+      authHandled = true;
+      showLoading('Signing you in... (' + firebaseUser.email + ')');
       await handleAuthSuccess(firebaseUser);
     } else {
       showStep('step-google');
@@ -196,34 +200,50 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
 async function handleAuthSuccess(firebaseUser) {
   currentUser = firebaseUser;
 
-  // Try to get user from Supabase
-  let userData = await db.getUser(firebaseUser.uid);
+  let userData = null;
+  try {
+    // Try Supabase with timeout
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+    userData = await Promise.race([db.getUser(firebaseUser.uid), timeout]);
 
-  if (!userData) {
-    // New user — create in DB
-    userData = await db.upsertUser(firebaseUser.uid, {
-      email:      firebaseUser.email,
-      name:       firebaseUser.displayName,
-      photo:      firebaseUser.photoURL,
-      gemini_key: null,
-      sessions:   0,
-      messages:   0,
-      corrections:0,
-      streak:     0,
-      last_active: new Date().toISOString()
-    });
-    userData = await db.getUser(firebaseUser.uid);
+    if (!userData) {
+      const upsertTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+      await Promise.race([db.upsertUser(firebaseUser.uid, {
+        email:      firebaseUser.email,
+        name:       firebaseUser.displayName,
+        photo:      firebaseUser.photoURL,
+        gemini_key: null,
+        sessions:   0,
+        messages:   0,
+        corrections:0,
+        streak:     0,
+        last_active: new Date().toISOString()
+      }), upsertTimeout]);
+      const getTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+      userData = await Promise.race([db.getUser(firebaseUser.uid), getTimeout]);
+    }
+  } catch (err) {
+    console.warn('Supabase error (continuing anyway):', err.message);
+    // Continue without DB — use local storage as fallback
+    userData = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: firebaseUser.displayName,
+      gemini_key: localStorage.getItem('gemini_key_' + firebaseUser.uid) || null
+    };
   }
 
   currentUserData = userData;
 
+  console.log('handleAuthSuccess done, gemini_key:', userData?.gemini_key ? 'EXISTS' : 'NONE');
+
   // Check if they have an API key saved
   if (!userData?.gemini_key) {
-    // First time — show API key setup
-    showStep('step-apikey');
+    console.log('No API key - showing step-apikey');
     document.getElementById('screen-login').style.display = 'flex';
+    showStep('step-apikey');
   } else {
-    // Returning user — launch app directly
+    console.log('Has API key - launching app');
     GEMINI_KEY = userData.gemini_key;
     launchApp();
   }
@@ -266,9 +286,12 @@ async function saveApiKey() {
     }
   } catch (e) { /* network error — proceed anyway */ }
 
-  // Save to Supabase
+  // Save to Supabase + localStorage fallback
   GEMINI_KEY = key;
-  await db.updateUser(currentUser.uid, { gemini_key: key });
+  localStorage.setItem('gemini_key_' + currentUser.uid, key);
+  try {
+    await db.updateUser(currentUser.uid, { gemini_key: key });
+  } catch(e) { console.warn('Supabase save failed, key saved locally'); }
   if (currentUserData) currentUserData.gemini_key = key;
 
   hint.textContent = '✅ Key saved! Launching...';
