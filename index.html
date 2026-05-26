@@ -10,7 +10,7 @@
 <!-- Firebase Auth -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
     from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
   // ══════════════════════════════
@@ -36,6 +36,8 @@ const firebaseConfig = {
   window._firebaseAuth     = auth;
   window._googleProvider   = provider;
   window._firebaseSignIn   = () => signInWithPopup(auth, provider);
+  window._firebaseSignInRedirect = () => signInWithRedirect(auth, provider);
+  window._getRedirectResult = () => getRedirectResult(auth);
   window._firebaseSignOut  = () => signOut(auth);
   window._onAuthChanged    = (cb) => onAuthStateChanged(auth, cb);
 
