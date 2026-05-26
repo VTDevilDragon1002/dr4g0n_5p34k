@@ -147,21 +147,26 @@ function showLoading(msg = 'Loading...') {
 }
 
 // Wait for Firebase to be ready then set up auth listener
-document.addEventListener('firebaseReady', () => {
-  // Handle redirect result first (for mobile/popup-blocked fallback)
-  if (window._getRedirectResult) {
-    window._getRedirectResult().then(async (result) => {
-      if (result && result.user) {
-        showLoading('Loading your profile...');
-        await handleAuthSuccess(result.user);
-      }
-    }).catch(() => {});
+document.addEventListener('firebaseReady', async () => {
+  // First check if we're returning from a redirect sign-in
+  showLoading('Checking sign-in status...');
+  try {
+    const result = await window._getRedirectResult();
+    if (result && result.user) {
+      console.log('Redirect result:', result.user.email);
+      showLoading('Signing you in...');
+      await handleAuthSuccess(result.user);
+      return;
+    }
+  } catch (err) {
+    console.log('Redirect check error:', err.message);
   }
 
+  // No redirect result — check current auth state
   let authHandled = false;
   window._onAuthChanged(async (firebaseUser) => {
     console.log('AUTH STATE CHANGED:', firebaseUser ? firebaseUser.email : 'null');
-    if (authHandled) { console.log('Already handled, skipping'); return; }
+    if (authHandled) return;
     if (firebaseUser) {
       authHandled = true;
       showLoading('Signing you in... (' + firebaseUser.email + ')');
