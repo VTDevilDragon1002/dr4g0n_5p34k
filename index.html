@@ -10,7 +10,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
     from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
   const firebaseConfig = {
@@ -28,10 +28,10 @@
   provider.addScope('email');
   provider.addScope('profile');
 
-  window._firebaseAuth    = auth;
-  window._googleProvider  = provider;
-  window._firebaseSignIn  = () => signInWithPopup(auth, provider);
-  window._firebaseSignOut = () => signOut(auth);
+  window._firebaseAuth       = auth;
+  window._googleProvider     = provider;
+  window._firebaseSignIn     = () => signInWithRedirect(auth, provider);
+  window._firebaseSignOut    = () => signOut(auth); window._getRedirectResult  = () => getRedirectResult(auth);
   window._onAuthChanged   = (cb) => onAuthStateChanged(auth, cb);
 
   document.dispatchEvent(new Event('firebaseReady'));
