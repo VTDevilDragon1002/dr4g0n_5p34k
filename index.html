@@ -7,40 +7,11 @@
 <link rel="stylesheet" href="assets/style.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
-    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-
-  const firebaseConfig = {
-    apiKey:            "AIzaSyBU4T67-ckea-faTEx2TsfXvdlIiahp4lA",
-    authDomain:        "dr4g0n-5p34k.firebaseapp.com",
-    projectId:         "dr4g0n-5p34k",
-    storageBucket:     "dr4g0n-5p34k.firebasestorage.app",
-    messagingSenderId: "694581156956",
-    appId:             "1:694581156956:web:4cedd6019dbbd52d0e1a99"
-  };
-
-  const app      = initializeApp(firebaseConfig);
-  const auth     = getAuth(app);
-  const provider = new GoogleAuthProvider();
-  provider.addScope('email');
-  provider.addScope('profile');
-
-  window._firebaseAuth       = auth;
-  window._googleProvider     = provider;
-  window._firebaseSignIn     = () => signInWithRedirect(auth, provider);
-  window._firebaseSignOut    = () => signOut(auth); window._getRedirectResult  = () => getRedirectResult(auth);
-  window._onAuthChanged   = (cb) => onAuthStateChanged(auth, cb);
-
-  document.dispatchEvent(new Event('firebaseReady'));
-</script>
 </head>
 <body>
 <div id="app">
 
-  <!-- SCREEN: LOGIN -->
+  <!-- ══ SCREEN: LOGIN / REGISTER ══ -->
   <div id="screen-login">
     <div class="login-bg">
       <div class="grid-lines"></div>
@@ -49,9 +20,7 @@
     </div>
     <div class="login-content">
       <div class="brand">
-        <div class="brand-icon">
-          <span class="brand-d">D</span><span class="brand-5">5</span>
-        </div>
+        <div class="brand-icon"><span class="brand-d">D</span><span class="brand-5">5</span></div>
         <div class="brand-name">DR4G0N 5P34K</div>
         <div class="brand-tagline">// AI ENGLISH TRAINER — TAMIL · TANGLISH · ENGLISH //</div>
       </div>
@@ -62,62 +31,76 @@
         <span class="pill">💡 Smart Topics</span>
       </div>
 
-      <div class="login-card" id="login-card">
+      <div class="login-card">
 
-        <!-- Step 1: Google Sign In -->
-        <div class="login-step" id="step-google">
-          <div class="step-title">SIGN IN TO CONTINUE</div>
-          <button class="btn-google" id="btn-google-login">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-            </svg>
-            Continue with Google
-          </button>
-          <div class="login-note">Free forever · No credit card · Secure Google login</div>
-          <div id="login-error" class="login-error"></div>
+        <!-- TAB SWITCHER -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-signin">SIGN IN</button>
+          <button class="auth-tab" id="tab-register">REGISTER</button>
         </div>
 
-        <!-- Step 2: First-time API key setup -->
-        <div class="login-step hidden" id="step-apikey">
-          <div class="step-badge">ONE-TIME SETUP</div>
-          <div class="step-title">CONNECT YOUR FREE AI</div>
-          <div class="step-desc">
-            Get your <strong>100% free</strong> Gemini API key — no credit card needed.<br>
-            You only do this <strong>once</strong>. We save it for you.
+        <!-- SIGN IN FORM -->
+        <div class="auth-form" id="form-signin">
+          <div class="step-title">WELCOME BACK</div>
+          <div class="field-group">
+            <label class="field-label">EMAIL</label>
+            <input type="email" id="signin-email" class="field-input" placeholder="your@email.com" autocomplete="email"/>
           </div>
-          <div class="api-steps-visual">
-            <div class="api-step-item">
-              <div class="api-step-num">1</div>
-              <div class="api-step-text">Click the button below → Google AI Studio opens</div>
-            </div>
-            <div class="api-step-item">
-              <div class="api-step-num">2</div>
-              <div class="api-step-text">Click <strong>"Create API Key"</strong> → Copy the key (starts with AIza...)</div>
-            </div>
-            <div class="api-step-item">
-              <div class="api-step-num">3</div>
-              <div class="api-step-text">Paste below → You're done forever ✅</div>
+          <div class="field-group">
+            <label class="field-label">PASSWORD</label>
+            <div class="pass-wrap">
+              <input type="password" id="signin-password" class="field-input" placeholder="Your password" autocomplete="current-password"/>
+              <button class="btn-eye" id="eye-signin">👁</button>
             </div>
           </div>
-          <a class="btn-aistudio" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
-            🔗 Open Google AI Studio (Free Key)
-          </a>
-          <div class="api-input-wrap">
-            <input type="password" id="api-key-input"
-              placeholder="Paste your key here (AIza...)"
-              autocomplete="off" spellcheck="false" />
-            <button class="btn-show-key" id="btn-show">👁</button>
-          </div>
-          <div class="api-key-hint" id="api-key-hint"></div>
-          <button class="btn-save-key" id="btn-save-key">⚡ SAVE &amp; LAUNCH</button>
-          <button class="btn-back-link" id="btn-back-google">← Sign in with different account</button>
+          <button class="btn-primary" id="btn-signin">⚡ SIGN IN</button>
+          <button class="btn-forgot" id="btn-forgot">Forgot password?</button>
+          <div class="auth-error" id="signin-error"></div>
         </div>
 
-        <!-- Loading state -->
-        <div class="login-step hidden" id="step-loading">
+        <!-- REGISTER FORM -->
+        <div class="auth-form hidden" id="form-register">
+          <div class="step-title">CREATE ACCOUNT</div>
+          <div class="field-group">
+            <label class="field-label">FULL NAME</label>
+            <input type="text" id="reg-name" class="field-input" placeholder="Your full name" autocomplete="name"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">EMAIL</label>
+            <input type="email" id="reg-email" class="field-input" placeholder="your@email.com" autocomplete="email"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">PHONE NUMBER</label>
+            <input type="tel" id="reg-phone" class="field-input" placeholder="+91 99999 99999" autocomplete="tel"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">PASSWORD</label>
+            <div class="pass-wrap">
+              <input type="password" id="reg-password" class="field-input" placeholder="Min 6 characters" autocomplete="new-password"/>
+              <button class="btn-eye" id="eye-reg">👁</button>
+            </div>
+          </div>
+          <button class="btn-primary" id="btn-register">🚀 CREATE ACCOUNT</button>
+          <div class="auth-error" id="register-error"></div>
+          <div class="auth-success" id="register-success"></div>
+        </div>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <div class="auth-form hidden" id="form-forgot">
+          <div class="step-title">RESET PASSWORD</div>
+          <div class="step-desc">Enter your email. We'll send a reset link.</div>
+          <div class="field-group">
+            <label class="field-label">EMAIL</label>
+            <input type="email" id="forgot-email" class="field-input" placeholder="your@email.com"/>
+          </div>
+          <button class="btn-primary" id="btn-reset">📧 SEND RESET LINK</button>
+          <button class="btn-back-link" id="btn-back-login">← Back to Sign In</button>
+          <div class="auth-error" id="forgot-error"></div>
+          <div class="auth-success" id="forgot-success"></div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="auth-form hidden" id="form-loading">
           <div class="loading-spinner"></div>
           <div class="loading-text" id="loading-text">Signing in...</div>
         </div>
@@ -127,7 +110,61 @@
     </div>
   </div>
 
-  <!-- SCREEN: MAIN APP -->
+
+  <!-- ══ SCREEN: API KEY SETUP (first time only) ══ -->
+  <div id="screen-apikey" class="hidden">
+    <div class="login-bg">
+      <div class="grid-lines"></div>
+      <div class="orb-glow g1"></div>
+      <div class="orb-glow g2"></div>
+    </div>
+    <div class="login-content">
+      <div class="brand">
+        <div class="brand-icon"><span class="brand-d">D</span><span class="brand-5">5</span></div>
+        <div class="brand-name">DR4G0N 5P34K</div>
+        <div class="brand-tagline">// ONE LAST STEP //</div>
+      </div>
+
+      <div class="login-card">
+        <div class="step-badge">ONE-TIME SETUP</div>
+        <div class="step-title">HEY <span id="apikey-welcome-name"></span>! CONNECT YOUR FREE AI</div>
+        <div class="step-desc">
+          Get your <strong>100% free</strong> Gemini API key.<br>
+          You only do this <strong>once</strong>. Saved forever to your account.
+        </div>
+
+        <div class="api-steps-visual">
+          <div class="api-step-item">
+            <div class="api-step-num">1</div>
+            <div class="api-step-text">Click the button below → Google AI Studio opens</div>
+          </div>
+          <div class="api-step-item">
+            <div class="api-step-num">2</div>
+            <div class="api-step-text">Click <strong>"Create API Key"</strong> → Copy the key (starts with AIza...)</div>
+          </div>
+          <div class="api-step-item">
+            <div class="api-step-num">3</div>
+            <div class="api-step-text">Paste below → Done forever ✅</div>
+          </div>
+        </div>
+
+        <a class="btn-aistudio" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
+          🔗 Open Google AI Studio (Free Key)
+        </a>
+
+        <div class="api-input-wrap">
+          <input type="password" id="setup-api-key" placeholder="Paste your key here (AIza...)" autocomplete="off" spellcheck="false"/>
+          <button class="btn-show-key" id="btn-show-setup-key">👁</button>
+        </div>
+        <div class="api-key-hint" id="setup-key-hint"></div>
+        <button class="btn-save-key" id="btn-save-setup-key">⚡ SAVE &amp; START TALKING</button>
+        <button class="btn-back-link" id="btn-apikey-logout">← Logout</button>
+      </div>
+      <div class="login-footer">Your key is saved only to your account · Private · Secure</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: MAIN APP ══ -->
   <div id="screen-app" class="hidden">
     <div class="top-bar">
       <div class="top-logo">DR4G0N 5P34K</div>
@@ -135,7 +172,7 @@
         <div class="user-avatar" id="user-avatar"></div>
         <div class="user-info">
           <div class="user-name" id="user-name-display"></div>
-          <div class="user-status" id="user-status-display">● CONNECTED</div>
+          <div class="user-status">● CONNECTED</div>
         </div>
         <button class="btn-logout" id="btn-logout">EXIT</button>
       </div>
@@ -159,10 +196,8 @@
           <button class="orb-btn" id="orb-btn">🎙</button>
         </div>
         <div class="vol-bars" id="vol-bars">
-          <div class="vol-bar" id="b1"></div>
-          <div class="vol-bar" id="b2"></div>
-          <div class="vol-bar" id="b3"></div>
-          <div class="vol-bar" id="b4"></div>
+          <div class="vol-bar" id="b1"></div><div class="vol-bar" id="b2"></div>
+          <div class="vol-bar" id="b3"></div><div class="vol-bar" id="b4"></div>
           <div class="vol-bar" id="b5"></div>
         </div>
         <div class="voice-status" id="voice-status">TAP ORB → HANDS-FREE CHAT</div>
@@ -245,7 +280,6 @@
         <span class="slider-val" id="pitch-val">1.00</span>
       </div>
       <button class="btn-apply" id="btn-apply-voice">✅ APPLY VOICE</button>
-
       <div class="divider"></div>
       <div class="section-label">// CUSTOM VOICE FILE //</div>
       <div class="upload-hint">Upload any MP3/WAV file. Dragon will use it when speaking.</div>
@@ -266,15 +300,18 @@
       <div class="section-label">// ACTIVE MODE //</div>
       <div class="voice-mode-display" id="current-voice-mode">MODE: SYSTEM DEFAULT</div>
 
+      <!-- Change Password -->
       <div class="divider"></div>
-      <div class="section-label">// API KEY //</div>
+      <div class="section-label">// CHANGE PASSWORD //</div>
       <div class="apikey-manage">
-        <div class="apikey-status" id="apikey-status">✅ Gemini API Connected</div>
-        <button class="btn-change-key" id="btn-change-key">🔄 Change API Key</button>
+        <button class="btn-change-key" id="btn-show-change-pass">🔑 Change Password</button>
       </div>
-      <div class="apikey-change-form hidden" id="apikey-change-form">
-        <input type="password" id="new-api-key-input" placeholder="Paste new Gemini key (AIza...)" />
-        <button class="btn-save-key-small" id="btn-update-key">SAVE NEW KEY</button>
+      <div class="apikey-change-form hidden" id="change-pass-form">
+        <input type="password" id="old-password" placeholder="Current password" class="field-input" style="margin-bottom:8px"/>
+        <input type="password" id="new-password" placeholder="New password (min 6 chars)" class="field-input" style="margin-bottom:8px"/>
+        <button class="btn-save-key-small" id="btn-save-new-pass">SAVE NEW PASSWORD</button>
+        <div class="auth-error" id="change-pass-error" style="margin-top:6px"></div>
+        <div class="auth-success" id="change-pass-success" style="margin-top:6px"></div>
       </div>
     </div>
   </div>
