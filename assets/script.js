@@ -146,7 +146,20 @@ function showLoading(msg = 'Loading...') {
   showStep('step-loading');
 }
 
-document.addEventListener('firebaseReady', () => {
+document.addEventListener('firebaseReady', async () => {
+  // Check if we're returning from a Google redirect
+  showLoading('Checking sign in...');
+  try {
+    const result = await window._getRedirectResult();
+    if (result?.user) {
+      await handleAuthSuccess(result.user);
+      return;
+    }
+  } catch (err) {
+    console.warn('Redirect result error:', err.message);
+  }
+
+  // No redirect result — check if already logged in
   window._onAuthChanged(async (firebaseUser) => {
     if (firebaseUser) {
       showLoading('Loading your profile...');
@@ -160,20 +173,12 @@ document.addEventListener('firebaseReady', () => {
 document.getElementById('btn-google-login').addEventListener('click', async () => {
   const errEl = document.getElementById('login-error');
   errEl.textContent = '';
-  showLoading('Opening Google Sign In...');
+  showLoading('Redirecting to Google...');
   try {
-    await window._firebaseSignIn();
+    await window._firebaseSignIn(); // redirects away — page reloads on return
   } catch (err) {
     showStep('step-google');
-    if (err.code === 'auth/popup-closed-by-user') {
-      errEl.textContent = 'Sign-in cancelled. Try again.';
-    } else if (err.code === 'auth/popup-blocked') {
-      errEl.textContent = '⚠ Popup blocked. Please allow popups for this site.';
-    } else if (err.code === 'auth/unauthorized-domain') {
-      errEl.textContent = '⚠ This domain is not authorized. Add it in Firebase Console → Authentication → Authorized Domains.';
-    } else {
-      errEl.textContent = '⚠ ' + (err.message || 'Sign in failed');
-    }
+    errEl.textContent = '⚠ ' + (err.message || 'Sign in failed. Try again.');
   }
 });
 
