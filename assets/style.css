@@ -593,3 +593,26 @@ textarea.chat-input:focus { border-color: rgba(255,107,26,0.35); }
   border-radius: 0 6px 6px 0; color: #ffc850;
   font-size: 13px; line-height: 1.5;
 }
+
+/* ══ AUTH TABS ══ */
+.auth-tabs { display:flex; gap:0; margin-bottom:20px; border-radius:8px; overflow:hidden; border:1px solid #ff6b1a44; }
+.auth-tab { flex:1; padding:10px; background:transparent; color:#888; border:none; cursor:pointer; font-family:'Share Tech Mono',monospace; font-size:13px; letter-spacing:1px; transition:all 0.2s; }
+.auth-tab.active { background:#ff6b1a22; color:#ff6b1a; }
+.auth-tab:hover { color:#ff6b1a; }
+
+/* ══ FIELD GROUPS ══ */
+.auth-form { display:flex; flex-direction:column; gap:0; }
+.field-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.field-label { font-size:11px; letter-spacing:2px; color:#888; font-family:'Share Tech Mono',monospace; }
+.field-input { background:#1a1a2e; border:1px solid #ff6b1a44; border-radius:8px; padding:12px 14px; color:#e8e8e8; font-size:14px; font-family:'Share Tech Mono',monospace; outline:none; transition:border 0.2s; width:100%; box-sizing:border-box; }
+.field-input:focus { border-color:#ff6b1a; }
+.pass-wrap { position:relative; display:flex; align-items:center; }
+.pass-wrap .field-input { padding-right:44px; }
+.btn-eye { position:absolute; right:10px; background:none; border:none; cursor:pointer; font-size:16px; color:#888; padding:4px; }
+.btn-primary { width:100%; padding:14px; background:linear-gradient(135deg,#ff6b1a,#ff8c42); border:none; border-radius:10px; color:#000; font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; letter-spacing:2px; cursor:pointer; margin-top:4px; transition:transform 0.2s,box-shadow 0.2s; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px #ff6b1a55; }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.btn-forgot { background:none; border:none; color:#888; font-size:12px; cursor:pointer; margin-top:10px; text-decoration:underline; font-family:'Share Tech Mono',monospace; }
+.btn-forgot:hover { color:#ff6b1a; }
+.auth-error { color:#ff5555; font-size:12px; font-family:'Share Tech Mono',monospace; margin-top:6px; display:none; line-height:1.5; }
+.auth-success { color:#1ad96b; font-size:12px; font-family:'Share Tech Mono',monospace; margin-top:6px; display:none; line-height:1.5; }
